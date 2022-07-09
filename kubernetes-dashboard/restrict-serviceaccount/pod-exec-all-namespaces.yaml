@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: pod-exec-all-namespaces-sa
+  namespace: default
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: pod-exec-all-namespaces-cr
+rules:
+  - apiGroups: ["", "extensions", "apps"]
+    resources: ["namespaces"]
+    verbs: ["list"]
+  - apiGroups: ["", "extensions", "apps"]
+    resources: ["pods","pods/log"]
+    verbs: ["get","list","watch"]
+  - apiGroups: ["", "extensions", "apps"]
+    resources: ["pods/exec"]
+    verbs: ["create"]    
+---  
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: pod-exec-all-namespaces-crb
+roleRef:
+  kind: ClusterRole
+  name: pod-exec-all-namespaces-cr
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+- kind: ServiceAccount
+  name: pod-exec-all-namespaces-sa
+  namespace: default
