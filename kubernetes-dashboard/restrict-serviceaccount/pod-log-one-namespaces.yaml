@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: pod-log-one-namespace-sa
+  namespace: SpecificNamespace
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: list-all-namespaces-cr
+rules:
+  - apiGroups: ["", "extensions", "apps"]
+    resources: ["namespaces"]
+    verbs: ["list"]
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: pod-log-one-namespace-cr
+rules:
+  - apiGroups: ["", "extensions", "apps"]
+    resources: ["pods","pods/log"]
+    verbs: ["get","list","watch"]  
+    
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: pod-log-one-namespace-rb
+  namespace: SpecificNamespace
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: pod-log-one-namespace-cr
+subjects:
+- kind: ServiceAccount
+  name: pod-log-one-namespace-sa
+  namespace: SpecificNamespace
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: pod-log-one-namespace-crb
+roleRef:
+  kind: ClusterRole
+  name: list-all-namespaces-cr
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+- kind: ServiceAccount
+  name: pod-log-one-namespace-sa
+  namespace: SpecificNamespace
